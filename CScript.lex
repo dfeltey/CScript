@@ -1,10 +1,12 @@
 nondigit            [a-z_]
 digit               [0-9]
+nonzero_digit       [1-9]
 hd                  [0-9a-fA-F]
-hq                  hd hd hd hd 
+hq                  {hd}{hd}{hd}{hd} 
 uni_char_name       ("\\u" hq) | ("\\U" hq hq)
 id_nd               nondigit|uni_char_name
 identifier          id_nd (id_nd|digit)*
+
 
 
 
@@ -55,4 +57,5 @@ identifier          id_nd (id_nd|digit)*
 "_Noreturn"         return 'NORETURN';
 "_Static_assert"    return 'STATIC_ASSERT';
 "_Thread_local"     return 'THREAD_LOCAL';
-identifier          return 'IDENTIFIER'
+identifier          return 'IDENTIFIER';
+
