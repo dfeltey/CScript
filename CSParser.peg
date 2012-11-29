@@ -1,0 +1,228 @@
+keyword 
+    = "auto" \ "break" \ "case" \ "char" \ "const" \ "continue" \ "default"
+    \ "double" \ "do" \ "else" \ "enum" \ "extern" \ "float" \ "for" \ "goto"
+    \ "if" \ "inline" \ "int" \ "long" \ "register" \ "restrict" \ "return"
+    \ "short" \ "signed" \ "sizeof" \ "static" \ "struct" \ "switch" 
+    \ "typedef" \ "union" \ "unsigned" \ "void" \ "volatile" \ "while"
+    \ "_Alignas" \ "_Alignof" \ "_Atomic" \ "_Bool" \ "_Complex" 
+    \ "_Generic" \ "_Imaginary" \ "_Noreturn" \ "_Static_assert"
+    \ "_Thread_local"
+
+identifier
+    = !keyword id_nondigit+ id_char*
+
+id_nondigit
+    = nondigit
+    \ uni_char_name
+
+id_char
+    = digit
+    \ id_nondigit
+
+digit
+    = [0-9]
+
+nonzero_digit
+    = [1-9]
+
+octal_digit
+    = [0-7]
+
+hex_digit
+    = [0-9a-fA-F]
+
+nondigit
+    = [_a-zA-Z]
+
+uni_char_name
+    = "\\u" hex_quad
+    \ "\\U" hex_quad hex_quad
+
+hex_quad
+    = hex_digit hex_digit hex_digit hex_digit
+
+constant
+    = int_constant
+    \ float_constant
+    \ enum_constant
+    \ char_constant
+
+int_constant
+    = decimal_constant (integer_suffix)?
+    \ octal_constant (integer_suffix)?
+    \ hex_constant (integer_suffix)?
+
+decimal_constant
+    = nonzero_digit digit*
+
+octal_constant
+    = "0" octal_digit*
+
+hex_constant
+    = hex_prefix hex_digit+
+
+hex_prefix
+    = "0x"
+    \ "0X"
+
+integer_suffix
+    = unsigned_suffix long_suffix?
+    \ unsigned_suffix long_long_suffix
+    \ long_suffix unsigned_suffix?
+    \ long_long_suffix unsigned_suffix?
+
+unsigned_suffix
+    = "u"
+    \ "U"
+
+long_suffix
+    = "l"
+    \ "L"
+
+long_long_suffix
+    = "ll"
+    \ "LL"
+
+float_constant
+    = dec_float_constant
+    \ hex_float_constant
+
+dec_float_constant
+    = frac_constant exp_part? float_suff?
+    \ digit_seq exp_part float_suff?
+
+hex_float_constant
+    = hex_prefix hex_frac_constant bin_exp_part float_suff?
+    \ hex_prefix hex_digit_seq bin_exp_part float_suff?
+
+frac_constant
+    = digit_seq? "." digit_seq
+    \ digit_seq "." 
+
+exp_part
+    = "e" sign?   digit_seq
+    \ "E" sign? digit_seq
+
+sign
+    = "+"
+    \ "-"
+
+digit_seq
+    = digit+
+
+hex_frac_const
+    = hex_digit_seq? "." hex_digit_seq
+    \ hex_digit_seq "."
+
+bin_exp_part
+    = "p" sign? digit_seq
+    \ "P" sign" digit_seq
+
+hex_digit_seq
+    = hex_digit+
+
+float_suff
+    = "f"
+    \ "l"
+    \ "F"
+    \ "L"
+
+enum_const
+    = identifier
+
+char_constant
+    = "\'" c_char_seq "\'"
+    \ "L\'" c_char_seq "\'"
+    \ "u\'" c_char_seq "\'"
+    \ "U\'" c_char_seq "\'"
+
+c_char_seq
+    = c_char+
+
+c_char
+    = !bad_char .
+    \ escape_sequence
+
+bad_char
+    = "\'"
+    \ "\\"
+    \ "\n"
+
+escape_sequence
+    = simple_escape_seq
+    \ octal_escape_seq
+    \ hex_escape_seq
+    \ uni_char_name
+
+simple_escape_seq
+    = "\\\'"
+    \ "\\\""
+    \ "\\?"
+    \ "\\\\"
+    \ "\\a"
+    \ "\\b"
+    \ "\\f"
+    \ "\\n"
+    \ "\\r"
+    \ "\\t"
+    \ "\\v"
+
+octal_escape_seq
+    = "\\" octal_digit octal_digit octal_digit
+    \ "\\" octal_digit octal_digit
+    \ "\\" octal_digit
+
+hex_escape_eq
+    = "\\x" hex_digit+
+
+string_literal
+    = encoding_prefix? "\"" s_char_seq? "\""
+
+encoding_prefix
+    = "u8"
+    \ "u"
+    \ "U"
+    \ "L"
+
+s_char_seq
+    = s_char+
+
+s_char
+    = !bad_string .
+    \ escape_sequence
+
+bad_string
+    = "\""
+    \ "\\"
+    \ "\n"
+
+// I don't know if I need punctuators given how PEGs work..?
+// punctuator
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
