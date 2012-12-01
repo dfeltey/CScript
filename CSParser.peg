@@ -1,23 +1,38 @@
+{
+    
+
+}
+// Can have an initializer section here, possibly to setup typedef things
+// or other things to initialize before parsing
+
+// Need to change almost all backslashes into forward slashes......
+//
+//
+
+start 
+    = 
+
+
 keyword 
-    = "auto" \ "break" \ "case" \ "char" \ "const" \ "continue" \ "default"
-    \ "double" \ "do" \ "else" \ "enum" \ "extern" \ "float" \ "for" \ "goto"
-    \ "if" \ "inline" \ "int" \ "long" \ "register" \ "restrict" \ "return"
-    \ "short" \ "signed" \ "sizeof" \ "static" \ "struct" \ "switch" 
-    \ "typedef" \ "union" \ "unsigned" \ "void" \ "volatile" \ "while"
-    \ "_Alignas" \ "_Alignof" \ "_Atomic" \ "_Bool" \ "_Complex" 
-    \ "_Generic" \ "_Imaginary" \ "_Noreturn" \ "_Static_assert"
-    \ "_Thread_local"
+    = "auto"/ "break"/ "case"/ "char"/ "const"/ "continue"/ "default"
+   / "double"/ "do"/ "else"/ "enum"/ "extern"/ "float"/ "for"/ "goto"
+   / "if"/ "inline"/ "int"/ "long"/ "register"/ "restrict"/ "return"
+   / "short"/ "signed"/ "sizeof"/ "static"/ "struct"/ "switch" 
+   / "typedef"/ "union"/ "unsigned"/ "void"/ "volatile"/ "while"
+   / "_Alignas"/ "_Alignof"/ "_Atomic"/ "_Bool"/ "_Complex" 
+   / "_Generic"/ "_Imaginary"/ "_Noreturn"/ "_Static_assert"
+   / "_Thread_local"
 
 identifier
     = !keyword id_nondigit+ id_char*
 
 id_nondigit
     = nondigit
-    \ uni_char_name
+   / uni_char_name
 
 id_char
     = digit
-    \ id_nondigit
+   / id_nondigit
 
 digit
     = [0-9]
@@ -36,21 +51,21 @@ nondigit
 
 uni_char_name
     = "\\u" hex_quad
-    \ "\\U" hex_quad hex_quad
+   / "\\U" hex_quad hex_quad
 
 hex_quad
     = hex_digit hex_digit hex_digit hex_digit
 
 constant
-    = int_constant
-    \ float_constant
-    \ enum_constant
-    \ char_constant
+    = float_constant
+   / int_constant
+   / enum_constant
+   / char_constant
 
 int_constant
     = decimal_constant (integer_suffix)?
-    \ octal_constant (integer_suffix)?
-    \ hex_constant (integer_suffix)?
+   / octal_constant (integer_suffix)?
+   / hex_constant (integer_suffix)?
 
 decimal_constant
     = nonzero_digit digit*
@@ -63,114 +78,114 @@ hex_constant
 
 hex_prefix
     = "0x"
-    \ "0X"
+   / "0X"
 
 integer_suffix
     = unsigned_suffix long_suffix?
-    \ unsigned_suffix long_long_suffix
-    \ long_suffix unsigned_suffix?
-    \ long_long_suffix unsigned_suffix?
+   / unsigned_suffix long_long_suffix
+   / long_suffix unsigned_suffix?
+   / long_long_suffix unsigned_suffix?
 
 unsigned_suffix
     = "u"
-    \ "U"
+   / "U"
 
 long_suffix
     = "l"
-    \ "L"
+   / "L"
 
 long_long_suffix
     = "ll"
-    \ "LL"
+   / "LL"
 
 float_constant
     = dec_float_constant
-    \ hex_float_constant
+   / hex_float_constant
 
 dec_float_constant
     = frac_constant exp_part? float_suff?
-    \ digit_seq exp_part float_suff?
+   / digit_seq exp_part float_suff?
 
 hex_float_constant
     = hex_prefix hex_frac_constant bin_exp_part float_suff?
-    \ hex_prefix hex_digit_seq bin_exp_part float_suff?
+   / hex_prefix hex_digit_seq bin_exp_part float_suff?
 
 frac_constant
     = digit_seq? "." digit_seq
-    \ digit_seq "." 
+   / digit_seq "." 
 
 exp_part
     = "e" sign?   digit_seq
-    \ "E" sign? digit_seq
+   / "E" sign? digit_seq
 
 sign
     = "+"
-    \ "-"
+   / "-"
 
 digit_seq
     = digit+
 
 hex_frac_const
     = hex_digit_seq? "." hex_digit_seq
-    \ hex_digit_seq "."
+   / hex_digit_seq "."
 
 bin_exp_part
     = "p" sign? digit_seq
-    \ "P" sign" digit_seq
+   / "P" sign" digit_seq
 
 hex_digit_seq
     = hex_digit+
 
 float_suff
     = "f"
-    \ "l"
-    \ "F"
-    \ "L"
+   / "l"
+   / "F"
+   / "L"
 
 enum_const
     = identifier
 
 char_constant
     = "\'" c_char_seq "\'"
-    \ "L\'" c_char_seq "\'"
-    \ "u\'" c_char_seq "\'"
-    \ "U\'" c_char_seq "\'"
+   / "L\'" c_char_seq "\'"
+   / "u\'" c_char_seq "\'"
+   / "U\'" c_char_seq "\'"
 
 c_char_seq
     = c_char+
 
 c_char
     = !bad_char .
-    \ escape_sequence
+   / escape_sequence
 
 bad_char
     = "\'"
-    \ "\\"
-    \ "\n"
+   / "\\"
+   / "\n"
 
 escape_sequence
     = simple_escape_seq
-    \ octal_escape_seq
-    \ hex_escape_seq
-    \ uni_char_name
+   / octal_escape_seq
+   / hex_escape_seq
+   / uni_char_name
 
 simple_escape_seq
     = "\\\'"
-    \ "\\\""
-    \ "\\?"
-    \ "\\\\"
-    \ "\\a"
-    \ "\\b"
-    \ "\\f"
-    \ "\\n"
-    \ "\\r"
-    \ "\\t"
-    \ "\\v"
+   / "\\\""
+   / "\\?"
+   / "\\\\"
+   / "\\a"
+   / "\\b"
+   / "\\f"
+   / "\\n"
+   / "\\r"
+   / "\\t"
+   / "\\v"
 
 octal_escape_seq
     = "\\" octal_digit octal_digit octal_digit
-    \ "\\" octal_digit octal_digit
-    \ "\\" octal_digit
+   / "\\" octal_digit octal_digit
+   / "\\" octal_digit
 
 hex_escape_eq
     = "\\x" hex_digit+
@@ -180,24 +195,297 @@ string_literal
 
 encoding_prefix
     = "u8"
-    \ "u"
-    \ "U"
-    \ "L"
+   / "u"
+   / "U"
+   / "L"
 
 s_char_seq
     = s_char+
 
 s_char
     = !bad_string .
-    \ escape_sequence
+   / escape_sequence
 
 bad_string
     = "\""
-    \ "\\"
-    \ "\n"
+   / "\\"
+   / "\n"
 
 // I don't know if I need punctuators given how PEGs work..?
 // punctuator
+
+header_name
+    = "<" h_char_seq ">"
+   / "\"" q_char_seq "\""
+
+h_char_seq
+    = h_char+
+
+h_char
+    = !bad_h_char .
+
+bad_h_char
+    = "\n"
+   / ">"
+
+q_char_seq
+    = q_char+
+
+// I hope this works in PEG.js otherwise factoring it out like above should work...
+q_char
+    = !("\"" / "\n") .
+
+pp_number
+    = (".")? digit ( digit / id_nondigit / ("e" / "E" / "p" / "P") sign / ".")*
+
+primary_expression
+    = identifier
+    / constant
+    / string_literal
+    / "(" expression ")"
+    / generic_selction
+
+generic_selection
+    = "_Generic" "(" assignment_expression "," generic_assoc_list ")"
+
+generic_assoc_list
+    = generic_association ("," generic_association)*
+
+generic_association
+    = type_name ":" assignment_expression
+    / "default" ":" assignment_expression
+
+postfix_expression
+    = (primary_expression / "(" type_name ")" "{" initializer_list ","? "}")
+      ( "[" expression "]"
+      / "(" argument_expression_list? ")"
+      / "." identifier
+      / "->" identifier
+      / "++"
+      / "--")*
+
+argument_expression_list
+    = assignment_expression ("," assignment_expression)*
+
+unary_expression
+    = postfix_expression
+    / "++" unary_expression
+    / "--" unary_expression
+    / unary_operator cast_expression
+    / "sizeof" unary_expression
+    / "sizeof" "(" type_name ")" 
+    / "_Alignof" "(" type_name ")" 
+
+unary_operator
+    = "&" / "*" / "+" / "-" / "~" / "!"
+
+cast_expression
+    = unary_expression
+    / "(" type_name ")" cast_expression
+
+multiplicative_expression
+    = cast_expression (("*" / "/" / "%") cast_expression)*
+
+additive_expression
+    = multiplicative_expression (("+" / "-") multiplicative_expression)*
+
+shift_expression
+    = additive_expression (("<<" / ">>") additive_expression)*
+
+relational_expression
+    = shift_expression (("<=" / "<" / ">=" / ">") shift_expression)*
+
+equality_expression
+    = relational_expression (("==" / "!=") relational_expression)*
+
+AND_expression
+    = equality_expression ("&" equality_expression)*
+
+exclusive_OR_expression
+    = AND_expression ("^" AND_expression)*
+
+inclusive_OR_expression
+    = exclusive_OR_expression ("|" exclusive_OR_expression)*
+
+logical_AND_expression
+    = inclusive_OR_expression ("&&" inclusive_OR_expression)*
+
+logical_OR_expression
+    = logical_AND_expression ("||" logical_AND_expression)*
+
+// in the MOUSE grammar this is starred with logical_OR_expression in place of recursion,
+// but I like this better for building a parse tree if PEG.js can handle it
+conditional_expression
+    = logical_OR_expression ("?" expression ":" conditional_exopression)?
+
+assignment_expression
+    = unary_expression assignment_operator assignment_expression
+    / conditional_expression
+
+assignment_operator
+    = "*=" 
+    / "/=" 
+    / "%=" 
+    / "+=" 
+    / "-=" 
+    / "<<=" 
+    / ">>=" 
+    / "&=" 
+    / "^=" 
+    / "|=" 
+    / "="
+
+expression
+    = assignment_expression ("," assignment_expression)*
+
+constant_expression
+    = conditional_expression
+
+
+
+
+declaration
+    = declaration_specifiers init_declarator_list? ";"
+    / static_assert_declaration
+
+declaration_specifiers
+    = ( storage_class_specifier
+      / type_specifier
+      / type_qualifier
+      / function_specifier
+      / alignment_specifier) declaration_specifier?
+
+init_declarator_list
+    = init_declarator ("," init_declarator)*
+
+init_declarator
+    = declarator "=" initializer
+    / declarator
+
+storage_class_specifier
+    = "typedef"
+    / "exter"
+    / "static"
+    / "_Thread_local"
+    / "auto"
+    / "register"
+
+type_specifier
+    = "void"
+    / "char"
+    / "short"
+    / "int"
+    / "long"
+    / "float"
+    / "double"
+    / "signed"
+    / "unsigned"
+    / "_Bool"
+    / "_Complex"
+    / atomic_type_specifier
+    / struct_or_union_specifier
+    / enum_specifier
+    / typedef_name
+
+struct_or_union_sepcifier
+    = struct_or_union identifier? "{" struct_declaration_list "}"
+    / struct_or_union identifier
+
+struct_or_union
+    = "struct"
+    / "union"
+
+struct_declaration_list
+    = struct_declaration+
+
+struct_declaration
+    = specifier_qualifier_list struct_declarator_list? ":"
+    / static_assert_declaration
+
+specifier_qualifier_list
+    = type_specifier specifier_qualifier_list?
+    / type_qualifier specifier_qualifier_list?
+
+struct_declarator_list
+    = struct_declarator ("," struct_declarator)*
+
+struct_declarator
+    = declarator
+    / declarator? ":" constant_expression
+
+enum_specifier
+    = "enum" (identifier? "{" enumerator_list ","? "}" / identifier)
+
+enumerator_list
+    = enumerator ("," enumerator)*
+
+enumerator
+    = enumeration_constant "=" constant_expression
+    \ enumeration_constant
+
+atomic_type_specifier
+    = "_Atomic" "(" type_name ")"
+
+type_qualifier
+    = "const"
+    / "restrict"
+    / "volatile"
+    / "_Atomic"
+
+function_specifier
+    = "inline"
+    / "_Noreturn"
+
+alignment_specifier
+    = "_Alignas" "(" type_name ")"
+    / "_Alignas" "(" constant_expression ")"
+
+declarator
+    = pointer? direct_declarator
+
+direct_declarator
+    = (identifier / "(" declarator ")") 
+      ( "[" type_qualifier_list? assignment_expression? "]" 
+      / "[" "static" type_qualifier_list? assignment_expression "]"
+      / "[" type_qualifier_list "static" assignment_expression "]"
+      / "[" type_qualifier_list? "*" "]"
+      / "(" parameter_type_list ")" 
+      / "(" identifier_list ")" )*
+
+pointer
+    = "*" type_qualifier_list? pointer
+    / "*" type_qualifier_list?
+
+type_qualifier_list 
+    = type_qualifier+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
