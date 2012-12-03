@@ -19,7 +19,7 @@ keyword
    / "if"/ "inline"/ "int"/ "long"/ "register"/ "restrict"/ "return"
    / "short"/ "signed"/ "sizeof"/ "static"/ "struct"/ "switch" 
    / "typedef"/ "union"/ "unsigned"/ "void"/ "volatile"/ "while"
-   / "_Alignas"/ "_Alignof"/ "_Atomic"/ "_Bool"/ "_Complex" 
+   / "_Alignas"/ "_Alignof"/ "_Atomic"/ "_Bool"/ "_Complex"  
    / "_Generic"/ "_Imaginary"/ "_Noreturn"/ "_Static_assert"
    / "_Thread_local"
 
@@ -443,6 +443,9 @@ alignment_specifier
 declarator
     = pointer? direct_declarator
 
+
+// should double check this agains the other C PEG grammar later to make
+// sure it is equivalent
 direct_declarator
     = (identifier / "(" declarator ")") 
       ( "[" type_qualifier_list? assignment_expression? "]" 
@@ -458,6 +461,250 @@ pointer
 
 type_qualifier_list 
     = type_qualifier+
+
+parameter_type_list
+    = parameter_list ("," "...")?
+
+parameter_list
+    = parameter_declaration ("," parameter_declaration)*
+
+parameter_declaration
+    = declaration_specifiers (declarator / abstract_declarator?)
+
+identifier_list
+    = identifier ("," identifier)*
+
+type_name
+    = specifier_qualifier_list abstract_declarator?
+
+abstract_declarator
+    = pointer? direct_abstract_declarator
+    / pointer
+
+direct_abstract_declarator
+    = ( "(" abstract_declarator ")" )? 
+      ( "[" type_qualifier_list? assignment_expression? "]"
+      / "[" "static" type_qualifier_list? assignment_expression "]"
+      / "[" type_qualifier_list "static" assignment_expression "]"
+      / "[" "*" "]"
+      / "(" parameter_type_list? ")")*
+
+typedef_name
+    = identifier
+
+initializer
+    = assignment_expression
+    / "{" initializer_list ","? "}"
+
+initializer_list
+    = designation? initializer ("," designation? initializer)*
+
+designation
+    = designator_list
+
+designator_list
+    = designator+
+
+designator
+    = "[" constant_expression "]"
+    / "." identifier
+
+static_assert_declaration
+    = "_Staic_assert" "(" constant_expression "," string_literal ")" ";"
+
+// Statements
+
+statement
+    = labeled_statement
+    / compound_statement
+    / expression_statement
+    / selection_statement
+    / iteration_statement
+    / jump_statement
+
+labeled_statement
+    = "default" ":" statement
+    / "case" constant_expression ":" statement
+    / identifier ":" statement
+
+compound_statement
+    = "{" block_item_list? "}"
+
+block_item_list
+    = block_item+
+
+block_item
+    = declaration
+    / statement
+
+expression_statement
+    = expression? ";"
+
+selection_statement
+    = "if" "(" expression ")" statement ("else" statement)?
+    / "switch" "(" expression ")" statement
+
+iteration_statement
+    = "while" "(" expression ")" statement
+    / "do" stamement "while" "(" expression ")" ";"
+    / "for" "(" expression? ";" expression? ";" expression? ")" statement
+    / "for" "(" declaration expression? ";" expression? ")" statement
+
+jump_statement
+    = "goto" identifier ";"
+    / "continue" ";"
+    / "break" ";"
+    / "return" expression? ":"
+
+// External definitions
+
+translation_unit
+    = external_declaration+
+
+external_declaration
+    = function_definition
+    / declaration
+
+function_definition
+    = declaration_specifiers declarator delcaration_list? compound_statement
+
+declaration_list
+    = declaration+
+
+// Preprocessing directives
+
+processing_file 
+    = group?
+
+group
+    = group_part+
+
+group_part
+    = if_section
+    / control_line
+    / text_line
+    / "#" non_directive
+
+if_section
+    = if_group elif_groups? else_group? endif_line
+
+if_group
+    = "#" "if" constant_expression new_line group?
+    / "#" "ifdef" identifier new_line group?
+    / "#" "ifndef" identifier new_line group?
+
+elif_groups
+    = elif_group+
+
+elif_group
+    = "#" "elif" constant_expression new_line group?
+
+else_group
+    = "#" "else" new_line group?
+
+endif_line 
+    = "#" "endif" new_line
+
+control_line
+    = "#" "include" pp_tokens new_line
+    / "#" "define" identifier replacement_list new_line
+    / "#" "define" identifier lparen identifier_list? ")" replacement_list new_line
+    / "#" "define" identifier lparen "..." ")" replacement_list new_line
+    / "#" "define" identifier lparen identifier_list "," "..." ")" replacement_list new_line
+    / "#" "undef" identifier new_line
+    / "#" "line" pp_tokens new_line
+    / "#" "error" pp_tokens? new_line
+    / "#" "pragma" pp_tokens? new_line
+    / "#" new_line
+
+text_line
+    = pp_tokens? new_line
+
+non_deirective
+    = pp_tokens new_line
+
+lparen
+    = !space "("
+
+space 
+    = [ \n\r\t]
+
+replacement_list
+    = pp_tokens?
+
+pp_tokens
+    = preprocessing_token+
+
+new_line
+    = "\n"
+
+preprocessing_token
+    = header_name
+    / identifier
+    / pp_number
+    / character_constant
+    / string_literal
+    / punctuator
+    / .
+
+punctuator
+    = "["
+    / "]"
+    / "("
+    / ")"
+    / "{"
+    / "}"
+    / "..."
+    / "->"
+    / "++"
+    / "--"
+    / "<:"
+    / ":>"
+    / "<%"
+    / "%>"
+    / "%:%:"
+    / "%:"
+    / "*="
+    / "/="
+    / "%="
+    / "+="
+    / "-="
+    / "<<="
+    / ">>="
+    / "&="
+    / "^="
+    / "|="
+    / "&"
+    / "*"
+    / "+"
+    / "-"
+    / "~"
+    / "!"
+    / "/"
+    / "%"
+    / "<<"
+    / ">>"
+    / "<="
+    / ">="
+    / "<"
+    / ">"
+    / "=="
+    / "!="
+    / "^"
+    / "|"
+    / "&&"
+    / "||"
+    / "?"
+    / ":"
+    / ";"
+    / "."
+    / "="
+    / ","
+    / "##"
+    / "#"
+
+
+    
 
 
 
