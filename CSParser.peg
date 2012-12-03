@@ -59,7 +59,7 @@ hex_quad
 constant
     = float_constant
    / int_constant
-   / enum_constant
+   / enumeration_constant
    / char_constant
 
 int_constant
@@ -125,13 +125,13 @@ sign
 digit_seq
     = digit+
 
-hex_frac_const
+hex_frac_constant
     = hex_digit_seq? "." hex_digit_seq
    / hex_digit_seq "."
 
 bin_exp_part
     = "p" sign? digit_seq
-   / "P" sign" digit_seq
+    / "P" sign? digit_seq
 
 hex_digit_seq
     = hex_digit+
@@ -142,7 +142,7 @@ float_suff
    / "F"
    / "L"
 
-enum_const
+enumeration_constant
     = identifier
 
 char_constant
@@ -187,7 +187,7 @@ octal_escape_seq
    / "\\" octal_digit octal_digit
    / "\\" octal_digit
 
-hex_escape_eq
+hex_escape_seq
     = "\\x" hex_digit+
 
 string_literal
@@ -243,7 +243,7 @@ primary_expression
     / constant
     / string_literal
     / "(" expression ")"
-    / generic_selction
+    / generic_selection
 
 generic_selection
     = "_Generic" "(" assignment_expression "," generic_assoc_list ")"
@@ -316,7 +316,7 @@ logical_OR_expression
 // in the MOUSE grammar this is starred with logical_OR_expression in place of recursion,
 // but I like this better for building a parse tree if PEG.js can handle it
 conditional_expression
-    = logical_OR_expression ("?" expression ":" conditional_exopression)?
+    = logical_OR_expression ("?" expression ":" conditional_expression)?
 
 assignment_expression
     = unary_expression assignment_operator assignment_expression
@@ -353,7 +353,7 @@ declaration_specifiers
       / type_specifier
       / type_qualifier
       / function_specifier
-      / alignment_specifier) declaration_specifier?
+      / alignment_specifier) declaration_specifiers?
 
 init_declarator_list
     = init_declarator ("," init_declarator)*
@@ -387,7 +387,7 @@ type_specifier
     / enum_specifier
     / typedef_name
 
-struct_or_union_sepcifier
+struct_or_union_specifier
     = struct_or_union identifier? "{" struct_declaration_list "}"
     / struct_or_union identifier
 
@@ -421,7 +421,7 @@ enumerator_list
 
 enumerator
     = enumeration_constant "=" constant_expression
-    \ enumeration_constant
+    / enumeration_constant
 
 atomic_type_specifier
     = "_Atomic" "(" type_name ")"
@@ -546,7 +546,7 @@ selection_statement
 
 iteration_statement
     = "while" "(" expression ")" statement
-    / "do" stamement "while" "(" expression ")" ";"
+    / "do" statement "while" "(" expression ")" ";"
     / "for" "(" expression? ";" expression? ";" expression? ")" statement
     / "for" "(" declaration expression? ";" expression? ")" statement
 
@@ -566,7 +566,7 @@ external_declaration
     / declaration
 
 function_definition
-    = declaration_specifiers declarator delcaration_list? compound_statement
+    = declaration_specifiers declarator declaration_list? compound_statement
 
 declaration_list
     = declaration+
@@ -620,7 +620,7 @@ control_line
 text_line
     = pp_tokens? new_line
 
-non_deirective
+non_directive
     = pp_tokens new_line
 
 lparen
@@ -642,7 +642,7 @@ preprocessing_token
     = header_name
     / identifier
     / pp_number
-    / character_constant
+    / char_constant
     / string_literal
     / punctuator
     / .
