@@ -1,0 +1,246 @@
+// MiniScript.peg
+
+// Lex Grammar
+
+token
+	= keyword
+	/ identifier
+	/ constant
+	/ string_literal
+	/ punctuator
+
+// Keywords
+
+keyword
+	= "auto" / "break" / "case" / "char" / "const" / "continue" / "default"
+	/ "double" / "do" / "else" / "enum" / "extern" / "float" / "for" / "goto"
+	/ "if" / "inline" / "int" / "long" / "register" / "restrict" / "return"
+	/ "short" / "signed" / "sizeof" / "static" / "struct" / "switch" 
+	/ "typedef" / "union" / "unsigned" / "void" / "volatile" / "while"
+	/ "_Alignas" / "_Alignof" / "_Atomic" / "_Bool" / "_Complex" / "_Generic"
+	/ "_Imaginary" / "_Noreturn" / "_Static_assert" / "_Thread_local"
+
+// Identifiers
+
+identifier
+	= identifier_nondigit (identifier_nondigit / digit)*
+
+identifier_nondigit
+	= nondigit
+	/ universal_character_name
+
+nondigit
+	= [_a-zA-Z]
+
+digit
+	= [0-9]
+
+universal_character_name
+	= "\\u" hex_quad
+	/ "\\U" hex_quad hex_quad
+
+hex_quad
+	= hexadecimal_digit hexadecimal_digit hexadecimal_digit hexadecimal_digit
+
+// Constants
+
+constant
+    = floating_constant
+    / integer_constant
+    / character_constant
+    / enumeration_constant    {return "UNIMPLEMENTED"}
+
+integer_constant
+    = decimal_constant integer_suffix?
+    / octal_constant integer_suffix?
+    / hexadecimal_constant integer_suffix?
+
+decimal_constant
+    = nonzero_digit (digit)*
+
+octal_constant
+    = "0" (octal_digit)*
+
+hexadecimal_constant
+    = hexadecimal_prefix hexadecimal_digit+
+
+hexadecimal_prefix
+    = "0x"
+    / "0X"
+
+nonzero_digit
+    = [1-9]
+
+octal_digit
+    = [0-7]
+
+hexadecimal_digit
+    = [0-9a-fA-F]
+
+integer_suffix
+    = unsigned_suffix long_long_suffix
+    / unsigned_suffix long_suffix?
+    / long_long_suffix unsigned_suffix?
+    / long_suffix unsigned_suffix?
+
+unsigned_suffix
+    = "u" 
+    / "U"
+
+long_suffix 
+    = "l"
+    / "L"
+
+long_long_suffix
+    = "ll"
+    / "LL"
+
+floating_constant
+    = decimal_floating_constant
+    / hexadecimal_floating_constant
+
+decimal_floating_constant
+    = fractional_constant exponent_part? floating_suffix?
+    / digit_sequence exponent_part floating_suffix?
+
+hexadecimal_floating_constant
+    = hexadecimal_prefix hexadecimal_fractional_constant
+      binary_exponent_part floating_suffix?
+    / hexadecimal_prefix hexadecimal_digit_sequence
+      binary_exponent_part floating_suffix?
+
+fractional_constant
+    = digit_sequence? "." digit_sequence
+    / digit_seqeucnce "."
+
+exponent_part
+    = "e" sign? digit_sequence
+    / "E" sign? digit_sequence
+
+sign
+    = "+" / "-"
+
+digit_sequence
+    = digit+
+
+hexadecimal_fractional_constant
+    = hexadecimal_digit_sequence? "." hexadeicmal_digit_sequence
+    / hexadecimal_digit_sequence "."
+
+binary_exponent_part
+    = "p" sign? digit_sequence
+    / "P" sign? digit_sequence
+
+hexadecimal_digit_sequence
+    = hexadecimal_digit+
+
+floating_suffix
+    = "f" / "F" / "l" / "L"
+
+enumeration_constant
+    = identifier
+
+character_constant
+    = "u" "\'" c_char_sequence "\'"
+    / "U" "\'" c_char_sequence "\'"
+    / "L" "\'" c_char_sequence "\'"
+    / "\'" c_char_sequence "\'"
+
+c_char_sequence
+    = c_char+
+
+c_char
+    = !("\\" / "\'" / "\n") .
+    / escape_sequence
+
+escape_sequence
+    = simple_escape_sequence
+    / octal_escape_sequence
+    / hexadecimal_escape_sequence
+    / universal_character_name
+
+simple_escape_sequence
+    = "\\\'"
+    / "\\\""
+    / "\\?"
+    / "\\\\"
+    / "\\a"
+    / "\\b"
+    / "\\f"
+    / "\\n"
+    / "\\r"
+    / "\\t"
+    / "\\v"
+
+octal_escape_sequence
+    = "\\" octal_digit (octal_digit octal_digit?)?
+
+hexadecimal_escape_sequence
+    = "\\x" hexadecimal_digit+
+
+// String Literals
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
