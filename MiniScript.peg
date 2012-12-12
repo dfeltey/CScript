@@ -1,4 +1,8 @@
 // MiniScript.peg
+//
+// EOPL idea of taking the interpreter (CPS interpreter)
+// and turning it into a compiler???
+
 
 // Lex Grammar
 
@@ -43,6 +47,16 @@ hex_quad
 	= hexadecimal_digit hexadecimal_digit hexadecimal_digit hexadecimal_digit
 
 // Constants
+// I want to propogate type information up the parse tree
+// because I know at compile type the type of a constant
+// ie float vs int vs char vs enum this will be helpful in 
+// converting between them in the intermediate representation.
+// JavaScript need not be the only backend so knowing the type
+// info could be helpful in other places.
+// All predicated on the idea that type conversion is basically
+// just a parsing function from one type to another....?
+//
+// 
 
 constant
     = floating_constant
@@ -180,6 +194,257 @@ hexadecimal_escape_sequence
 
 // String Literals
 
+string_literal
+    = encoding_prefix? "\"" s_char_sequence? "\""
+
+encoding_prefix
+    = "u8" 
+    / "u"
+    / "U"
+    / "L"
+
+s_char_sequence
+    = s_char+
+
+s_char
+    = !("\"" / "\\" / "\n") .
+    / escape_sequence
+
+// Expressions
+
+primary_expression
+    = identifier
+    / constant
+    / string_literal
+    / "(" expression ")"
+    / generic_expression // I don't know if this is necessary for a simplified version of C ???
+
+generic_selection
+    = "_Generic" "(" assignment_expression "," generic_assoc_list ")"
+
+generic_assoc_list
+    = generic_association ("," generic_association)*
+
+generic_association
+    = type_name ":" assignment_expression
+    / "default" ":" assignment_expression
+
+postfix_expression
+    = (primary_expression / "(" type_name ")" "{" initializer_list ","? "}")
+      ( "[" expression "]"
+      / "(" argument_expression_list? ")"
+      / "." identifier
+      / "->" identifier
+      / "++"
+      / "--")* 
+// I need to factor these out, probably into some kind of right recursion to build a 
+// better parse tree, to track semantics better
+
+argument_expression_list
+    = assignment_expression ("," assignment_expression)*
+
+unary_expression
+    = postfix_expression
+    / "++" unary_expression
+    / "--" unary_expression
+    / unary_operator cast_expression
+    / "sizeof" unary_expression
+    / "sizeof" "(" type_name ")"
+    / "_Alignof" "(" type_name  ")"
+
+unary_operator
+    = "&"
+    / "*"
+    / "+"
+    / "-"
+    / "~"
+    / "!"
+
+cast_expression
+    = unary_expression
+    / "(" type_name ")" cast_expression
+// might want to flip the order in cast_expression to avoid ambiguities??
+
+multiplicative_expression
+    = cast_expression ( ("*" / "/" / "%") cast_expression)*
+// I don't like this at all as a way of building the AST
+// but it seems like just iterating over the list
+// and building the tree to preserve what should be a
+// left recursion is probably the best way to handle this...
+
+
+additive_expression
+    = multiplicative_expression (("+" / "-") multiplicative_expression)*
+
+shift_expression
+    = additive_expression (("<<" / ">>") additive_expression)*
+
+relational_expression
+    = shift_expression ( ("<=" / ">=" / "<" / ">") shift_expression)*
+
+equality_expression
+    = relational_expression (("==" / "!=") relational_expression)*
+
+AND_expression
+    = equality_expression ("&" equality_expression)*
+
+exclusive_OR_expression
+    = AND_expression ("^" AND_expression)*
+
+inclusive_OR_expression
+    = exclusive_OR_expression ("|" exclusive_OR_expression)*
+
+
+// I think that the logical operators can be represented 
+// as right recursive especially since they are commutative
+// ...
+logical_AND_expression
+    = inclusive_OR_expression ("&&" inclusive_OR_expression)*
+
+logical_OR_expression
+    = logical_AND_expression ("||" logical_OR_expression)*
+
+conditional_expression
+    = logical_OR_expression "?" expression ":" conditional_expression
+
+assignment_expression
+    = conditional_expression    
+    / unary_expression assignment_operator assignment_expression
+
+assignment_operator
+    = "*="
+    / "/="
+    / "%="
+    / "+="
+    / "-="
+    / "<<="
+    / ">>="
+    / "&="
+    / "^="
+    / "|="
+    / "="
+
+expression
+    = conditional_expression ("," assignment_expression)*
+
+constant_expression
+    = conditional_expression
+
+
+
+// What if we I factor out the left recursion into right recursion,
+// but then in the main rule flatten the tree back into a list
+// and turn it into a left recursive based tree
+
+
+// Declarations
+
+declaration 
+    = declaration_specifiers init_declarator_list? ":"
+    / static_assert_declaration
+
+declaration_specifiers
+    = storage_class_specifier declaration_specifiers?
+    / type_sepcifier declaration_specifiers?
+    / type_qualifier declaration_specifiers?
+    / function_specifier declaration_specifiers?
+    / alignment_specifier declaration_specifiers?
+
+init_declarator_list
+    = init_declarator ("," init_declarator)*
+
+init_declarator
+    = declarator "=" initializer_list
+    / declarator
+
+
+// in all of this I need to go through it and remove the typedef stuff
+// in the final version, probably as I go through and add semantic
+// actions and deal with left recursion challenges
+
+storage_class_specifier
+    = "typedef"
+    / "extern"
+    / "static"
+    / "_Thread_local"
+    / "auto"
+    / "register"
+
+type_specifier
+    = "void"
+    / "char"
+    / "short"
+    / "int"
+    / "long"
+    / "float"
+    / "double"
+    / "signed"
+    / "unsigned"
+    / "_Bool"
+    / "_Complex"
+    / atomic_type_specifier
+    / struct_or_union_specifier
+    / enum_specifier
+    / typedef_name
+
+struct_or_union_specifier
+    = struct_or_union identifier? "{" struct_declaration_list "}"
+    / struct_or_union identifier
+
+struct_or_union
+    = "struct"
+    / "union"
+
+struct_declaration_list
+    = struct_declaration+
+
+struct_declaration
+    = specifier_qualifier_list struct_declarator_list?
+    / static_assert_declaration
+
+specifier_qualifier_list
+    = type_sepcifier specifier_qualifier_list?
+    / type_qualifier specifier_qualifier_list?
+
+struct_declarator_list
+    = struct_declarator ("," struct_declarator) *
+
+struct_declarator
+    = declarator? ":" constant_expression
+    / declarator 
+
+enum_specifier
+    = "enum" identifier? "{" enumerator_list ","? "}"
+    / "enum" identifier
+
+enumerator_list
+    = enumerator ("," enumerator)?
+
+enumerator
+    = enumeration_constant "=" constant_expression
+    / enumeration_constant
+
+atomic_type_specifier
+    = "_Atomic" "(" type_name ")"
+
+type_qualifier
+    = "const"
+    / "restrict"
+    / "volatile"
+    / "_Atomic"
+
+function_specifier
+    = "inline"
+    / "_Noreturn"
+
+alignment_specifier
+    = "_Alignas" "(" type_name ")"
+    / "_Alignas" "(" constant_expression ")"
+
+declarator 
+    = pointer? direct_declarator
+
+ 
 
 
 
