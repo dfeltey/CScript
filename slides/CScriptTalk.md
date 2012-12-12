@@ -65,7 +65,18 @@ Paradigm shift
 
 # The Future
 
+- Finishing the parser
+- Building the interpreter/compiler
+- Fill in the missing pieces
+
 # Contributing
+
+[GH]: https://github.com/dfeltey/CScript "GitHub.com/dfeltey/CScript"
+
+- CScript is open source and all code is available at [GitHub.com/dfeltey/CScript][GH]
+- I'm very open to suggestions/opinions/contributions
+- I hope that CScript could become a valuable learning/teaching tool
+
 
 # References
 
