@@ -88,6 +88,7 @@ Parsing Expression Grammars
 - Ordered choice eliminates ambiguity
 - Left recursion can be eliminated
 - Linear time parsing
+- No need for pre-lexed input
 - The C grammar is easy to adapt to a PEG
 
 # PEG: The Bad
@@ -98,8 +99,7 @@ Parsing Expression Grammars
     - Can change associativity
 - Space use proportional to input
     - The downside to linear time parsing
-
-
+- Sometimes pre-lexed input would be nice
 
 
 
@@ -126,13 +126,20 @@ Paradigm shift
 - C is imperative
 - JavaScript is Object-oriented, Imperative, Functional
 
+Source, Intermediate, Target, and Implementation Languages
+
+- Semantic differences can be challenging
+- Compiler vs. Interpreter
+- C -> Functionl IL may be forcing square peg into round hole
+
 
 
 # The Future
 
-- Finishing the parser
+- Finishing the parser and adding semantic actions
 - Building the interpreter/compiler
-- Fill in the missing pieces
+- Putting the pieces together
+- Dealing with the ugly parts of C
 
 # Contributing
 
@@ -144,6 +151,12 @@ Paradigm shift
 
 
 # References
+
+References:
+
+- bford.info/packrat
+- blog.might.net
+
 
 
 
