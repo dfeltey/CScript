@@ -1,4 +1,4 @@
-% CScript
+% CScript: Implementing C in JavaScript
 % Daniel Feltey
 % December 12, 2012
 
@@ -41,18 +41,82 @@ Available options:
 # Parser Generators
 
 Context Free Grammars
-- 
+
+- Bison/Yacc/Jison
+- Happy
+
+Parsing Expression Grammars
+
+- PEG.js
+- Pappy
+
+# Parser Generator Syntax
+
+Context Free Grammars
 -
+> add_expr 
+>    : cast_expr
+>    | add_expr + mult_expr
+>    | add_expr - mult_expr
 
 Parsing Expression Grammars
 -
--
+> add_expr
+>    = cast_expr ("+" mult_expr)*
+>    / cast_expr ("-" mult_expr)*
 
-# PEG Continued 
+
+# CFG vs. PEG
+
+Context Free Grammars
+
+- Bottom up parsing
+- LR, LALR algorithms
+- Ambiguity
+- Usually require pre-lexed input
+
+Parsing Expression Grammars
+
+- Top down parsing
+- Linear time
+- _Unambiguous_ 
+- No need for a lexer
+- Problems with left recursion
+
+# PEG: The Good 
+
+- Ordered choice eliminates ambiguity
+- Left recursion can be eliminated
+- Linear time parsing
+- The C grammar is easy to adapt to a PEG
+
+# PEG: The Bad
+
+- Rule order matters
+    - __do__ vs. __double__
+- Left recursion elimination can be tricky
+    - Can change associativity
+- Space use proportional to input
+    - The downside to linear time parsing
+
+
+
+
 
 # Continuations
 
 # Compiler vs. Interpreter
+
+Compile to JavaScript
+
+- CoffeeScript
+- Elm
+- Fay
+
+Interpret in JavaScript
+
+- Various Schemes
+- O'Browser: OCaml bytecode interpreter in JavaScript
 
 
 # Challenges
@@ -61,6 +125,7 @@ Paradigm shift
 
 - C is imperative
 - JavaScript is Object-oriented, Imperative, Functional
+
 
 
 # The Future
