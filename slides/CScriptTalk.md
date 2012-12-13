@@ -54,16 +54,16 @@ Parsing Expression Grammars
 
 Context Free Grammars
 -
-> add_expr 
->    : cast_expr
->    | add_expr + mult_expr
->    | add_expr - mult_expr
+> assign_expr
+>    : conditional_expr
+>    | unary_expr assign_op assign_expr
 
 Parsing Expression Grammars
--
-> add_expr
->    = cast_expr ("+" mult_expr)*
->    / cast_expr ("-" mult_expr)*
+- 
+> assign_expr
+>    = conditional_expr
+>    / unary_expr assign_op assign_expr
+
 
 
 # CFG vs. PEG
@@ -101,6 +101,19 @@ Parsing Expression Grammars
     - The downside to linear time parsing
 - Sometimes pre-lexed input would be nice
 
+# Left Recursion
+
+Context Free Grammars
+-
+> add_expr 
+>  : cast_expr
+>  | add_expr + mult_expr
+>  | add_expr - mult_expr
+
+Parsing Expression Grammars
+-
+> add_expr
+>  = cast_expr (("+" / "-") mult_expr)*
 
 
 # Continuations
@@ -142,7 +155,7 @@ Source, Intermediate, Target, and Implementation Languages
 - Compiler vs. Interpreter
 - C -> Functionl IL may be forcing square peg into round hole
 
-# Similar Project
+# Similar Projects
 
 Emscripten
 
