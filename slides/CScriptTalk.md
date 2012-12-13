@@ -105,6 +105,16 @@ Parsing Expression Grammars
 
 # Continuations
 
+- According to wikipedia Continuations are an "Abstract representation of the control state of a program"
+- Continuation Passing Style
+    - IL for programming languages
+- Compiling with Continuations
+    - Desugaring to function and continuation calls
+    - Desugaring to just function calls
+- CESK Machine
+    - Control Environment Store (K)ontinuation
+    - One way to implement interpreters
+
 # Compiler vs. Interpreter
 
 Compile to JavaScript
@@ -132,6 +142,20 @@ Source, Intermediate, Target, and Implementation Languages
 - Compiler vs. Interpreter
 - C -> Functionl IL may be forcing square peg into round hole
 
+# Similar Project
+
+Emscripten
+
+- Compiles LLVM bitcode into JavaScript
+- Using this would still require a C -> LLVM frontend
+
+
+Clue
+
+- Not web based
+- Last updated over four years ago
+- CScript is based on a C11 draft
+
 
 
 # The Future
@@ -156,6 +180,7 @@ References:
 
 - bford.info/packrat
 - blog.might.net
+- altJS.org
 
 
 
